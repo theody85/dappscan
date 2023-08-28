@@ -4,7 +4,7 @@
 
 .hero {
   background-color: #440151;
-  background-image: url("/public/images/blobs/waves-light.svg");
+  background-image: url("/bg.svg");
 }
 
 .border-thin {

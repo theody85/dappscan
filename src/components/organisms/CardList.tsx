@@ -1,7 +1,11 @@
 import { rightarrow } from "../../assets";
 import { Link } from "react-router-dom";
 
-const CardList = ({ title, children }) => {
+type CardListProps = {
+  title: string;
+  children?: React.ReactNode;
+};
+const CardList = ({ title, children }: CardListProps) => {
   return (
     <div className="shadow-xl rounded-xl bg-white">
       <div className="border-thin p-5">

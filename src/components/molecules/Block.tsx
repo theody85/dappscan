@@ -4,11 +4,21 @@ type BlockProps = {
   feeRecipient: string;
   numberTxns: number;
   cardProps: CardProps;
+  navigateToBlockDetail: VoidFunction;
 };
 
-const Block = ({ feeRecipient, numberTxns, cardProps }: BlockProps) => {
+const Block = ({
+  feeRecipient,
+  numberTxns,
+  cardProps,
+  navigateToBlockDetail,
+}: BlockProps) => {
   return (
-    <Card {...cardProps} amountTitle="Block Reward">
+    <Card
+      {...cardProps}
+      amountTitle="Block Reward"
+      navigateToBlockDetail={navigateToBlockDetail}
+    >
       <div className="flex flex-col ">
         <div>
           Validated By{" "}

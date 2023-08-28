@@ -4,7 +4,7 @@ import {
   ColumnFiltersState,
   SortingState,
   VisibilityState,
-  createColumnHelper,
+  // createColumnHelper,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -34,7 +34,7 @@ import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { useFetchBlockData } from "../../hooks";
 
-const columnHelper = createColumnHelper<Block>();
+// const columnHelper = createColumnHelper<Block>();
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const columns: ColumnDef<Block>[] = [
@@ -42,7 +42,7 @@ export const columns: ColumnDef<Block>[] = [
     accessorKey: "number",
     header: "Block",
     cell: ({ row }) => (
-      <div className="text-left">{row.getValue("number")}</div>
+      <div className="text-left text-[#9918b3]">{row.getValue("number")}</div>
     ),
     enableSorting: false,
     enableHiding: false,
@@ -69,7 +69,7 @@ export const columns: ColumnDef<Block>[] = [
     accessorKey: "miner",
     header: () => "Validator",
     cell: ({ row }) => (
-      <div className="text-left font-medium">
+      <div className="text-left font-medium text-[#9918b3]">
         {row.getValue<string>("miner").slice(0, 20).concat("...")}
       </div>
     ),
@@ -122,13 +122,17 @@ const BlocksTable = () => {
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
+    [],
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { blockList } = useFetchBlockData();
+  const { blockList, setBlocksPerPage } = useFetchBlockData();
+
+  React.useEffect(() => {
+    setBlocksPerPage(30);
+  }, []);
 
   const table = useReactTable({
     data: blockList,
@@ -150,7 +154,8 @@ const BlocksTable = () => {
   });
 
   return (
-    <div className="w-full lg:px-16 mt-24">
+    <div className="w-full lg:px-16 mt-24 mb-20">
+      <h2 className="text-3xl">Blocks</h2>
       <div className="flex items-center py-4">
         <Input
           placeholder="Search by block number..."
@@ -199,7 +204,7 @@ const BlocksTable = () => {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   );
@@ -220,7 +225,7 @@ const BlocksTable = () => {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

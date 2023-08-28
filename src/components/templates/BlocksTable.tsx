@@ -51,9 +51,7 @@ export const columns: ColumnDef<Block>[] = [
     accessorKey: "timestamp",
     header: "Age",
     cell: ({ row }) => (
-      <div className="capitalize">
-        {moment.unix(row.getValue("timestamp")).fromNow()}
-      </div>
+      <div className="">{moment.unix(row.getValue("timestamp")).fromNow()}</div>
     ),
   },
   {

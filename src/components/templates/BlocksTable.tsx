@@ -130,6 +130,7 @@ const BlocksTable = () => {
 
   React.useEffect(() => {
     setBlocksPerPage(30);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const table = useReactTable({

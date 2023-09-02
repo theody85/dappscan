@@ -32,7 +32,16 @@ import {
 import { Block } from "alchemy-sdk";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
-import { useFetchBlockData } from "../../hooks";
+import { AlchemyContext } from "../../context";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "../shadcn/ui/select";
 
 // const columnHelper = createColumnHelper<Block>();
 
@@ -120,21 +129,23 @@ const BlocksTable = () => {
 
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
+    []
   );
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { blockList, setBlocksPerPage } = useFetchBlockData();
+  const { blockList, blocksPerPage, setBlocksPerPage, loading } =
+    React.useContext(AlchemyContext);
 
   React.useEffect(() => {
-    setBlocksPerPage(30);
+    setBlocksPerPage(25);
+    table.setPageSize(25);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const table = useReactTable({
-    data: blockList,
+    data: blockList ?? [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -151,7 +162,7 @@ const BlocksTable = () => {
       rowSelection,
     },
   });
-
+  console.log(table.getState().pagination.pageSize, "table");
   return (
     <div className="w-full lg:px-16 mt-24 mb-20">
       <h2 className="text-3xl">Blocks</h2>
@@ -203,7 +214,7 @@ const BlocksTable = () => {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext(),
+                            header.getContext()
                           )}
                     </TableHead>
                   );
@@ -224,7 +235,7 @@ const BlocksTable = () => {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext(),
+                        cell.getContext()
                       )}
                     </TableCell>
                   ))}
@@ -266,6 +277,26 @@ const BlocksTable = () => {
             Next
           </Button>
         </div>
+
+        <Select
+          onValueChange={(value) => {
+            table.setPageSize(+value);
+            setBlocksPerPage(+value);
+          }}
+        >
+          <SelectTrigger className="w-[180px]">
+            <SelectValue placeholder={`${blocksPerPage}`} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {[25, 50, 100].map((item) => (
+                <SelectItem key={item} value={item.toString()}>
+                  {item}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );

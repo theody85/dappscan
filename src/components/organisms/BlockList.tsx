@@ -1,14 +1,20 @@
 import CardList from "./CardList";
 import BlockData from "../molecules/Block";
 import { blockIcon } from "../../assets";
-import { useFetchBlockData } from "../../hooks";
+// import { useFetchBlockData } from "../../hooks";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
+import { Loader } from "lucide-react";
+import { useContext } from "react";
+import { AlchemyContext } from "../../context";
 
 const BlockList = () => {
-  const { blockList } = useFetchBlockData();
+  const { blockList, loading } = useContext(AlchemyContext);
   const navigate = useNavigate();
 
+  if (loading) {
+    <Loader />;
+  }
   return (
     <CardList title="Blocks">
       {blockList &&

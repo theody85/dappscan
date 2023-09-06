@@ -4,7 +4,7 @@
 
 **Dappscan** is a versatile blockchain block explorer that allows users to explore various aspects of a blockchain network. You can use this tool to access information about the blockchain network itself, explore individual blocks, inspect transactions within a block, and examine specific accounts. Dappscan is designed to be user-friendly, efficient, and is built using Vite with TypeScript.
 
-![Dappscan Screenshot](dappscan-screenshot.png)
+![Dappscan Screenshot](public/dappscan-screenshot.png)
 
 ## Features
 
@@ -23,10 +23,10 @@ Dappscan provides the following key features:
 To run Dappscan locally for development or testing:
 
 1. Clone this repository.
-2. Navigate to the project directory and run `npm install` to install the necessary dependencies.
+2. Navigate to the project directory and run `yarn` to install the necessary dependencies.
 3. Configure the AlchemySDK or your preferred blockchain provider to connect to the desired blockchain network.
 4. Update the Vite configuration as needed, ensuring it points to your chosen blockchain provider.
-5. Start the development server with `npm run dev`.
+5. Start the development server with `yarn dev`.
 
 ## Usage
 

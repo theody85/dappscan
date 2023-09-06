@@ -134,7 +134,7 @@ const BlocksTable = () => {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { blockList, blocksPerPage, setBlocksPerPage, loading } =
+  const { blockList, blocksPerPage, setBlocksPerPage } =
     React.useContext(AlchemyContext);
 
   React.useEffect(() => {
@@ -278,7 +278,7 @@ const BlocksTable = () => {
         </div>
 
         <Select
-          onValueChange={(value) => {
+          onValueChange={(value: string | number) => {
             table.setPageSize(+value);
             setBlocksPerPage(+value);
           }}

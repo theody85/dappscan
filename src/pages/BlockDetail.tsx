@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { useFetchBlockData } from "../hooks";
+import { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import { Block } from "alchemy-sdk";
 import moment from "moment";
+import { AlchemyContext } from "../context";
 
 const BlockDetail = () => {
   const params = useParams<{ blockNumber: string }>();
-  const { getBlock } = useFetchBlockData();
+  const { getBlock } = useContext(AlchemyContext);
 
   const [block, setBlock] = useState<Block | null>(null);
 

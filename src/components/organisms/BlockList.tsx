@@ -9,7 +9,7 @@ import { useContext } from "react";
 import { AlchemyContext } from "../../context";
 
 const BlockList = () => {
-  const { blockList, loading } = useContext(AlchemyContext);
+  const { blockList, loading, blockRewardList } = useContext(AlchemyContext);
   const navigate = useNavigate();
 
   if (loading) {
@@ -18,12 +18,12 @@ const BlockList = () => {
   return (
     <CardList title="Blocks">
       {blockList &&
-        blockList.map((block) => {
+        blockList.map((block, index) => {
           const cardProps = {
             icon: blockIcon,
             identifier: block.number,
             timestamp: moment.unix(block.timestamp).fromNow(),
-            amount: 2,
+            amount: blockRewardList ? Number(blockRewardList[index]) : 2,
           };
           const miner = block.miner;
           const numberOfTxns = block.transactions.length;

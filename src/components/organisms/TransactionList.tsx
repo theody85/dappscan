@@ -7,9 +7,11 @@ import { AlchemyContext } from "../../context";
 import { CardProps } from "../molecules/Card";
 import { ethers } from "ethers";
 import moment from "moment";
+import { useNavigate } from "react-router-dom";
 
 const TransactionList = () => {
   const { transactionList } = useContext(AlchemyContext);
+  const navigate = useNavigate();
 
   return (
     <CardList title="Transactions">
@@ -33,6 +35,9 @@ const TransactionList = () => {
               to={to}
               from={from}
               cardProps={cardProps}
+              navigateToTxnDetail={() =>
+                navigate(`/txns/${transaction.transactionHash}`)
+              }
             />
           );
         })}

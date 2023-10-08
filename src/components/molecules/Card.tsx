@@ -18,7 +18,7 @@ const Card = ({
   navigateToBlockDetail,
 }: CardProps) => {
   return (
-    <div className="p-4 flex justify-between border-thin">
+    <div className="p-4 flex justify-between border-b-2">
       <div className="flex gap-3 items-center">
         <span className="bg-gray-100 p-2">
           <img src={icon} alt={`${icon}-icon`} className="w-6 h-6 opacity-60" />

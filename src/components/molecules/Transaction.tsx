@@ -4,10 +4,20 @@ type TransactionProps = {
   to: string;
   from: string;
   cardProps: CardProps;
+  navigateToTxnDetail?: VoidFunction;
 };
-const Transaction = ({ to, from, cardProps }: TransactionProps) => {
+const Transaction = ({
+  to,
+  from,
+  cardProps,
+  navigateToTxnDetail,
+}: TransactionProps) => {
   return (
-    <Card {...cardProps} amountTitle="Ether">
+    <Card
+      {...cardProps}
+      amountTitle="Ether"
+      navigateToBlockDetail={navigateToTxnDetail}
+    >
       <div className="flex flex-col items-start">
         <div>
           To{" "}

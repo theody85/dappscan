@@ -41,6 +41,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../shadcn/ui/select";
+import { ethers } from "ethers";
+import { Progress } from "@material-tailwind/react";
 
 // const columnHelper = createColumnHelper<Block>();
 
@@ -84,8 +86,22 @@ export const columns: ColumnDef<Block>[] = [
     accessorKey: "gasUsed",
     header: () => "Gas Used",
     cell: ({ row }) => (
-      <div className="text-left font-medium">
-        {row.getValue<{ toNumber: () => number }>("gasUsed").toNumber()}
+      <div className="text-left font-medium flex flex-col gap-2">
+        <span>
+          {row
+            .getValue<{ toNumber: () => number }>("gasUsed")
+            .toNumber()
+            .toLocaleString()}
+        </span>
+        <Progress
+          value={
+            (row.getValue<{ toNumber: () => number }>("gasUsed").toNumber() *
+              100) /
+            row.getValue<{ toNumber: () => number }>("gasLimit").toNumber()
+          }
+          color="purple"
+          size="sm"
+        />
       </div>
     ),
   },
@@ -94,7 +110,10 @@ export const columns: ColumnDef<Block>[] = [
     header: () => "Gas Limit",
     cell: ({ row }) => (
       <div className="text-left font-medium">
-        {row.getValue<{ toNumber: () => number }>("gasLimit").toNumber()}
+        {row
+          .getValue<{ toNumber: () => number }>("gasLimit")
+          .toNumber()
+          .toLocaleString()}
       </div>
     ),
   },
@@ -103,7 +122,15 @@ export const columns: ColumnDef<Block>[] = [
     header: () => "Base Fee",
     cell: ({ row }) => (
       <div className="text-left font-medium">
-        {row.getValue<{ toNumber: () => number }>("baseFeePerGas").toNumber()}
+        {Number(
+          ethers.formatUnits(
+            row
+              .getValue<{ toBigInt: () => bigint }>("baseFeePerGas")
+              .toBigInt(),
+            "gwei",
+          ),
+        ).toPrecision(3)}{" "}
+        Gwei
       </div>
     ),
   },

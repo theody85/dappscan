@@ -26,10 +26,7 @@ const Block = ({
             {feeRecipient.slice(0, 15)}...
           </span>
         </div>
-        <div className="text-[#9918b3]">
-          {numberTxns} txns
-          {/* <span></span> */}
-        </div>
+        <div className="text-[#9918b3]">{numberTxns} txns</div>
       </div>
     </Card>
   );

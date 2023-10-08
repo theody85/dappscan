@@ -13,6 +13,8 @@ type AlchemyContextType = {
   blockRewardList: string[] | null;
   getBlockList: (blockNumber: number, limit: number) => Promise<void>;
   getBlock: (blockNumber: number) => Promise<Block | null>;
+  getBlockReward: (block: Block) => Promise<number | null>;
+  getBurntFees: (block: Block) => Promise<number | null>;
   blocksPerPage: number;
   setBlocksPerPage: (blocksPerPage: number) => void;
   loading: boolean;
@@ -25,6 +27,8 @@ export const AlchemyContext = createContext<AlchemyContextType>({
   blockRewardList: null,
   getBlockList: () => Promise.resolve(void 0),
   getBlock: () => Promise.resolve(null),
+  getBlockReward: () => Promise.resolve(null),
+  getBurntFees: () => Promise.resolve(null),
   blocksPerPage: 0,
   setBlocksPerPage: () => null,
   loading: false,
@@ -66,7 +70,7 @@ const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
       }
       blockList.push(block);
       const blockReward = await getBlockReward(block);
-      blockRewardList.push(blockReward);
+      blockRewardList.push(blockReward.toPrecision(4));
       blockNumber--;
     }
 
@@ -97,19 +101,24 @@ const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
 
     return totalTxnsFee;
   };
-
-  const getBlockReward = async (block: Block) => {
+  const getBurntFees = async (block: Block) => {
     const baseFeePerGas = block.baseFeePerGas;
     const gasUsed = block.gasUsed;
-    const txnsFee = await getTxnsGasUseage(block.hash);
 
     const burnedFees = baseFeePerGas?.mul(gasUsed);
     const burnedFeesNum = Number(burnedFees);
 
-    const blockReward = txnsFee - burnedFeesNum;
+    return burnedFeesNum;
+  };
+  const getBlockReward = async (block: Block) => {
+    const txnsFee = await getTxnsGasUseage(block.hash);
+
+    const burntFees = await getBurntFees(block);
+
+    const blockReward = txnsFee - burntFees;
     const formattedblockReward = ethers.formatEther(BigInt(blockReward));
 
-    return Number(formattedblockReward).toPrecision(4);
+    return Number(formattedblockReward);
   };
 
   useEffect(() => {
@@ -131,6 +140,8 @@ const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
         getBlockList,
         getBlock,
         setBlocksPerPage,
+        getBlockReward,
+        getBurntFees,
         blocksPerPage,
         loading,
       }}

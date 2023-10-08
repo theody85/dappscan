@@ -1,12 +1,13 @@
+import withMT from "@material-tailwind/react/utils/withMT";
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default withMT({
   darkMode: ["class"],
   content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   theme: {
     container: {
       center: true,
@@ -32,5 +33,6 @@ module.exports = {
       },
     },
   },
+  // eslint-disable-next-line no-undef
   plugins: [require("tailwindcss-animate")],
-}
+});

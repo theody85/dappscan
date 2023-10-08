@@ -5,6 +5,8 @@ import { receipt } from "../../assets";
 import Transaction from "../molecules/Transaction";
 import { AlchemyContext } from "../../context";
 import { CardProps } from "../molecules/Card";
+import { ethers } from "ethers";
+import moment from "moment";
 
 const TransactionList = () => {
   const { transactionList } = useContext(AlchemyContext);
@@ -16,8 +18,10 @@ const TransactionList = () => {
           const cardProps = {
             icon: receipt,
             identifier: transaction.transactionHash.slice(0, 18) + "...",
-            timestamp: String(transaction.status),
-            amount: 2,
+            timestamp: moment.unix(transaction.timestamp).fromNow(),
+            amount: Number(ethers.formatEther(transaction.value)).toPrecision(
+              4,
+            ),
           } as CardProps;
 
           const to = transaction.to;

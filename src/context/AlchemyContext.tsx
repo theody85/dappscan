@@ -5,12 +5,17 @@ import { createContext, useEffect, useState } from "react";
 type AlchemyContextProviderProps = {
   children: React.ReactNode;
 };
+
 export type ExtendedBlock = Block & { reward: string; burntFees: number };
+export type ExtendedTransaction = TransactionReceipt & {
+  value: bigint;
+  timestamp: number;
+};
 
 type AlchemyContextType = {
   alchemy: Alchemy;
   blockList: ExtendedBlock[] | null;
-  transactionList: TransactionReceipt[] | null;
+  transactionList: ExtendedTransaction[] | null;
   getBlockList: (blockNumber: number, limit: number) => Promise<void>;
   getBlock: (blockNumber: number) => Promise<ExtendedBlock | null>;
 
@@ -41,17 +46,18 @@ const BLOCKS_PER_PAGE = 10;
 const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
   const [blockList, setBlockList] = useState<ExtendedBlock[]>([]);
   const [blocksPerPage, setBlocksPerPage] = useState<number>(BLOCKS_PER_PAGE);
-  const [transactionList, setTransactionList] = useState<TransactionReceipt[]>(
+  const [transactionList, setTransactionList] = useState<ExtendedTransaction[]>(
     [],
   );
 
   const [loading, setLoading] = useState<boolean>(false);
 
   const alchemy = new Alchemy(settings);
+  const provider = new ethers.AlchemyProvider(undefined, settings.apiKey);
 
   const getBlockList = async (blockNumber: number, limit: number) => {
     const blockList: ExtendedBlock[] = [];
-    const transactionList: TransactionReceipt[] = [];
+    const transactionList: ExtendedTransaction[] = [];
 
     for (let i = 0; i < limit; i++) {
       const block = await getBlock(blockNumber);
@@ -61,8 +67,15 @@ const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
       const latestTransaction = await alchemy.core.getTransactionReceipt(
         latestTransactionHash,
       );
-      if (latestTransaction) {
-        transactionList.push(latestTransaction);
+      const transaction = await provider.getTransaction(latestTransactionHash);
+      if (transaction && latestTransaction) {
+        const fullTxnDetails = {
+          ...latestTransaction,
+          value: transaction.value,
+          timestamp: block.timestamp,
+        };
+
+        transactionList.push(fullTxnDetails);
       }
 
       blockList.push(block);

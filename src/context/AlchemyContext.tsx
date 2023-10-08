@@ -10,6 +10,7 @@ export type ExtendedBlock = Block & { reward: string; burntFees: number };
 export type ExtendedTransaction = TransactionReceipt & {
   value: bigint;
   timestamp: number;
+  feeRecipient: string;
 };
 
 type AlchemyContextType = {
@@ -18,7 +19,9 @@ type AlchemyContextType = {
   transactionList: ExtendedTransaction[] | null;
   getBlockList: (blockNumber: number, limit: number) => Promise<void>;
   getBlock: (blockNumber: number) => Promise<ExtendedBlock | null>;
-
+  getTransaction: (
+    transactionHash: string,
+  ) => Promise<ExtendedTransaction | null>;
   blocksPerPage: number;
   setBlocksPerPage: (blocksPerPage: number) => void;
   loading: boolean;
@@ -30,7 +33,7 @@ export const AlchemyContext = createContext<AlchemyContextType>({
   transactionList: null,
   getBlockList: () => Promise.resolve(void 0),
   getBlock: () => Promise.resolve(null),
-
+  getTransaction: () => Promise.resolve(null),
   blocksPerPage: 0,
   setBlocksPerPage: () => null,
   loading: false,
@@ -64,19 +67,9 @@ const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
       const blockTransactions = block.transactions;
       const latestTransactionHash =
         blockTransactions[blockTransactions.length - 1];
-      const latestTransaction = await alchemy.core.getTransactionReceipt(
-        latestTransactionHash,
-      );
-      const transaction = await provider.getTransaction(latestTransactionHash);
-      if (transaction && latestTransaction) {
-        const fullTxnDetails = {
-          ...latestTransaction,
-          value: transaction.value,
-          timestamp: block.timestamp,
-        };
+      const latestTransaction = await getTransaction(latestTransactionHash);
 
-        transactionList.push(fullTxnDetails);
-      }
+      latestTransaction && transactionList.push(latestTransaction);
 
       blockList.push(block);
 
@@ -133,6 +126,25 @@ const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
     return { reward: Number(formattedblockReward), burntFees };
   };
 
+  const getTransaction = async (transactionHash: string) => {
+    const transaction = await alchemy.core.getTransactionReceipt(
+      transactionHash,
+    );
+    const txn = await provider.getTransaction(transactionHash);
+    console.log(txn?.data);
+    if (!transaction || !txn) return null;
+    const { timestamp, miner } = await getBlock(transaction?.blockNumber);
+
+    const fullTxnDetails = {
+      ...transaction,
+      value: txn?.value,
+      timestamp,
+      feeRecipient: miner,
+    };
+
+    return fullTxnDetails;
+  };
+
   useEffect(() => {
     (async () => {
       setLoading(true);
@@ -150,6 +162,7 @@ const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
         transactionList,
         getBlockList,
         getBlock,
+        getTransaction,
         setBlocksPerPage,
         blocksPerPage,
         loading,

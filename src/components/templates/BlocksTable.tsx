@@ -12,7 +12,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Files } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -29,7 +29,6 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "../shadcn/ui/dropdown-menu";
-import { Block } from "alchemy-sdk";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
 import { AlchemyContext } from "../../context";
@@ -43,112 +42,9 @@ import {
 } from "../shadcn/ui/select";
 import { ethers } from "ethers";
 import { Progress } from "@material-tailwind/react";
+import { ExtendedBlock } from "../../context/AlchemyContext";
 
 // const columnHelper = createColumnHelper<Block>();
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const columns: ColumnDef<Block>[] = [
-  {
-    accessorKey: "number",
-    header: "Block",
-    cell: ({ row }) => (
-      <div className="text-left text-[#9918b3]">{row.getValue("number")}</div>
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "timestamp",
-    header: "Age",
-    cell: ({ row }) => (
-      <div className="">{moment.unix(row.getValue("timestamp")).fromNow()}</div>
-    ),
-  },
-  {
-    accessorKey: "transactions",
-    header: "Txn",
-    cell: ({ row }) => (
-      <div className="lowercase">
-        {row.getValue<unknown[]>("transactions").length}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "miner",
-    header: () => "Validator",
-    cell: ({ row }) => (
-      <div className="text-left font-medium text-[#9918b3]">
-        {row.getValue<string>("miner").slice(0, 20).concat("...")}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "gasUsed",
-    header: () => "Gas Used",
-    cell: ({ row }) => (
-      <div className="text-left font-medium flex flex-col gap-2">
-        <span>
-          {row
-            .getValue<{ toNumber: () => number }>("gasUsed")
-            .toNumber()
-            .toLocaleString()}
-        </span>
-        <Progress
-          value={
-            (row.getValue<{ toNumber: () => number }>("gasUsed").toNumber() *
-              100) /
-            row.getValue<{ toNumber: () => number }>("gasLimit").toNumber()
-          }
-          color="purple"
-          size="sm"
-        />
-      </div>
-    ),
-  },
-  {
-    accessorKey: "gasLimit",
-    header: () => "Gas Limit",
-    cell: ({ row }) => (
-      <div className="text-left font-medium">
-        {row
-          .getValue<{ toNumber: () => number }>("gasLimit")
-          .toNumber()
-          .toLocaleString()}
-      </div>
-    ),
-  },
-  {
-    accessorKey: "baseFeePerGas",
-    header: () => "Base Fee",
-    cell: ({ row }) => (
-      <div className="text-left font-medium">
-        {Number(
-          ethers.formatUnits(
-            row
-              .getValue<{ toBigInt: () => bigint }>("baseFeePerGas")
-              .toBigInt(),
-            "gwei",
-          ),
-        ).toPrecision(3)}{" "}
-        Gwei
-      </div>
-    ),
-  },
-  // {
-  //   accessorKey: "reward",
-  //   header: () => "Reward",
-  //   cell: ({ row }) => (
-  //     <div className="text-right font-medium">{row.getValue("reward")}</div>
-  //   ),
-  // },
-  // {
-  //   accessorKey: "difficulty",
-  //   header: () => "Burnt Fees",
-  //   cell: ({ row }) => (
-  //     <div className="text-right font-medium">{row.getValue("difficulty")}</div>
-  //   ),
-  // },
-];
 
 const BlocksTable = () => {
   const navigate = useNavigate();
@@ -163,6 +59,142 @@ const BlocksTable = () => {
 
   const { blockList, blocksPerPage, setBlocksPerPage } =
     React.useContext(AlchemyContext);
+
+  const columns: ColumnDef<ExtendedBlock>[] = [
+    {
+      accessorKey: "number",
+      header: "Block",
+      cell: ({ row }) => (
+        <div
+          className="text-left text-[#9918b3] hover:text-[#9918b3]/60"
+          onClick={() => navigate(`/blocks/${row.getValue("number")}`)}
+        >
+          {row.getValue("number")}
+        </div>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "timestamp",
+      header: "Age",
+      cell: ({ row }) => (
+        <div className="">
+          {moment.unix(row.getValue("timestamp")).fromNow()}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "transactions",
+      header: "Txn",
+      cell: ({ row }) => (
+        <div className="lowercase">
+          {row.getValue<unknown[]>("transactions").length}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "miner",
+      header: () => "Fee Recipient",
+      cell: ({ row }) => (
+        <div className="flex items-center">
+          <span className="text-left font-medium text-[#9918b3]">
+            {row.getValue<string>("miner").slice(0, 20).concat("...")}
+          </span>
+          <Files
+            className="ml-2 hover:text-[#9918b3] active:text-[#e3bfeb] cursor-pointer"
+            size={15}
+            onClick={() =>
+              navigator.clipboard.writeText(row.getValue<string>("miner"))
+            }
+          />
+        </div>
+      ),
+    },
+    {
+      accessorKey: "gasUsed",
+      header: () => "Gas Used",
+      cell: ({ row }) => (
+        <div className="text-left font-medium flex flex-col gap-2">
+          <span className="flex justify-between items-center">
+            {row
+              .getValue<{ toNumber: () => number }>("gasUsed")
+              .toNumber()
+              .toLocaleString()}
+
+            <span className="text-[11px]">
+              {(
+                (row
+                  .getValue<{ toNumber: () => number }>("gasUsed")
+                  .toNumber() *
+                  100) /
+                row.getValue<{ toNumber: () => number }>("gasLimit").toNumber()
+              ).toPrecision(4)}
+              %
+            </span>
+          </span>
+          <Progress
+            value={
+              (row.getValue<{ toNumber: () => number }>("gasUsed").toNumber() *
+                100) /
+              row.getValue<{ toNumber: () => number }>("gasLimit").toNumber()
+            }
+            color="purple"
+            size="sm"
+          />
+        </div>
+      ),
+    },
+    {
+      accessorKey: "gasLimit",
+      header: () => "Gas Limit",
+      cell: ({ row }) => (
+        <div className="text-left font-medium">
+          {row
+            .getValue<{ toNumber: () => number }>("gasLimit")
+            .toNumber()
+            .toLocaleString()}
+        </div>
+      ),
+    },
+    {
+      accessorKey: "baseFeePerGas",
+      header: () => "Base Fee",
+      cell: ({ row }) => (
+        <div className="text-left font-medium">
+          {Number(
+            ethers.formatUnits(
+              row
+                .getValue<{ toBigInt: () => bigint }>("baseFeePerGas")
+                .toBigInt(),
+              "gwei",
+            ),
+          ).toPrecision(3)}{" "}
+          Gwei
+        </div>
+      ),
+    },
+    {
+      accessorKey: "reward",
+      header: () => "Reward",
+      cell: ({ row }) => (
+        <div className="text-right font-medium">
+          {row.getValue("reward")} ETH
+        </div>
+      ),
+    },
+    {
+      accessorKey: "burntFees",
+      header: () => "Burnt Fees (ETH)",
+      cell: ({ row }) => (
+        <div className="text-right font-medium">
+          {Number(
+            ethers.formatEther(BigInt(row.getValue<number>("burntFees"))),
+          ).toFixed(6)}
+        </div>
+      ),
+    },
+  ];
 
   React.useEffect(() => {
     setBlocksPerPage(25);
@@ -235,7 +267,7 @@ const BlocksTable = () => {
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead key={header.id}>
+                    <TableHead key={header.id} className="font-bold">
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -255,7 +287,6 @@ const BlocksTable = () => {
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   className="cursor-pointer"
-                  onClick={() => navigate(`/blocks/${row.getValue("number")}`)}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>

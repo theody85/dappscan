@@ -2,7 +2,7 @@ export type CardProps = {
   icon: string;
   identifier: number | string;
   timestamp: string | null;
-  amount: number;
+  amount: string | number;
   amountTitle?: string;
   children?: React.ReactNode;
   navigateToBlockDetail?: VoidFunction;

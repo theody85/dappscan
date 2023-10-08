@@ -5,16 +5,15 @@ import { createContext, useEffect, useState } from "react";
 type AlchemyContextProviderProps = {
   children: React.ReactNode;
 };
+export type ExtendedBlock = Block & { reward: string; burntFees: number };
 
 type AlchemyContextType = {
   alchemy: Alchemy;
-  blockList: Block[] | null;
+  blockList: ExtendedBlock[] | null;
   transactionList: TransactionReceipt[] | null;
-  blockRewardList: string[] | null;
   getBlockList: (blockNumber: number, limit: number) => Promise<void>;
-  getBlock: (blockNumber: number) => Promise<Block | null>;
-  getBlockReward: (block: Block) => Promise<number | null>;
-  getBurntFees: (block: Block) => Promise<number | null>;
+  getBlock: (blockNumber: number) => Promise<ExtendedBlock | null>;
+
   blocksPerPage: number;
   setBlocksPerPage: (blocksPerPage: number) => void;
   loading: boolean;
@@ -24,11 +23,9 @@ export const AlchemyContext = createContext<AlchemyContextType>({
   alchemy: {} as Alchemy,
   blockList: null,
   transactionList: null,
-  blockRewardList: null,
   getBlockList: () => Promise.resolve(void 0),
   getBlock: () => Promise.resolve(null),
-  getBlockReward: () => Promise.resolve(null),
-  getBurntFees: () => Promise.resolve(null),
+
   blocksPerPage: 0,
   setBlocksPerPage: () => null,
   loading: false,
@@ -42,20 +39,19 @@ const settings = {
 const BLOCKS_PER_PAGE = 10;
 
 const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
-  const [blockList, setBlockList] = useState<Block[]>([]);
+  const [blockList, setBlockList] = useState<ExtendedBlock[]>([]);
   const [blocksPerPage, setBlocksPerPage] = useState<number>(BLOCKS_PER_PAGE);
   const [transactionList, setTransactionList] = useState<TransactionReceipt[]>(
     [],
   );
-  const [blockRewardList, setblockRewardList] = useState<string[]>([]);
+
   const [loading, setLoading] = useState<boolean>(false);
 
   const alchemy = new Alchemy(settings);
 
   const getBlockList = async (blockNumber: number, limit: number) => {
-    const blockList: Block[] = [];
+    const blockList: ExtendedBlock[] = [];
     const transactionList: TransactionReceipt[] = [];
-    const blockRewardList: string[] = [];
 
     for (let i = 0; i < limit; i++) {
       const block = await getBlock(blockNumber);
@@ -68,21 +64,24 @@ const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
       if (latestTransaction) {
         transactionList.push(latestTransaction);
       }
+
       blockList.push(block);
-      const blockReward = await getBlockReward(block);
-      blockRewardList.push(blockReward.toPrecision(4));
+
       blockNumber--;
     }
 
     setBlockList(blockList);
     setTransactionList(transactionList);
-    setblockRewardList(blockRewardList);
+
     setLoading(false);
   };
 
   const getBlock = async (blockNumber: number) => {
     const block = await alchemy.core.getBlock(blockNumber);
-    return block;
+    const { reward, burntFees } = await getBlockReward(block);
+
+    const fullBlock = { ...block, reward: reward.toPrecision(4), burntFees };
+    return fullBlock;
   };
 
   const getTxnsGasUseage = async (blockHash: string) => {
@@ -118,7 +117,7 @@ const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
     const blockReward = txnsFee - burntFees;
     const formattedblockReward = ethers.formatEther(BigInt(blockReward));
 
-    return Number(formattedblockReward);
+    return { reward: Number(formattedblockReward), burntFees };
   };
 
   useEffect(() => {
@@ -136,12 +135,9 @@ const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
         alchemy,
         blockList,
         transactionList,
-        blockRewardList,
         getBlockList,
         getBlock,
         setBlocksPerPage,
-        getBlockReward,
-        getBurntFees,
         blocksPerPage,
         loading,
       }}

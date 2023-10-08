@@ -1,6 +1,5 @@
 import { useEffect, useState, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Block } from "alchemy-sdk";
 import moment from "moment";
 import { AlchemyContext } from "../context";
 import { ethers } from "ethers";
@@ -12,26 +11,20 @@ import {
   HelpCircle,
 } from "lucide-react";
 import { Progress } from "@material-tailwind/react";
+import { ExtendedBlock } from "../context/AlchemyContext";
 
 const BlockDetail = () => {
   const params = useParams<{ blockNumber: string }>();
   const navigate = useNavigate();
-  const { getBlock, getBlockReward, getBurntFees } = useContext(AlchemyContext);
+  const { getBlock } = useContext(AlchemyContext);
 
-  const [block, setBlock] = useState<Block | null>(null);
-  const [blockReward, setBlockReward] = useState<number | null>();
-  const [burntFees, setBurntFees] = useState<number | null>(null);
+  const [block, setBlock] = useState<ExtendedBlock | null>(null);
 
   useEffect(() => {
     (async () => {
       const block = await getBlock(Number(params.blockNumber));
-      if (block) {
-        const blockReward = await getBlockReward(block);
-        const burntFees = await getBurntFees(block);
-        setBlock(block);
-        setBlockReward(blockReward);
-        setBurntFees(burntFees);
-      }
+
+      setBlock(block);
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -78,7 +71,7 @@ const BlockDetail = () => {
               <Clock4 className="mr-2" size={15} />
               {block ? moment.unix(block.timestamp).fromNow() : 0}
 
-              <span className="text-[#cf87df] ml-1">
+              <span className="text-[#9918b3] ml-1">
                 ({block ? moment.unix(block.timestamp).toLocaleString() : 0})
               </span>
             </span>
@@ -91,7 +84,7 @@ const BlockDetail = () => {
               Transactions:{" "}
             </span>
             <span className="w-2/3 font-medium ">
-              <span className="text-[#cf87df] ">
+              <span className="text-[#9918b3] ">
                 {block?.transactions.length} transactions
               </span>{" "}
               in this block
@@ -107,10 +100,10 @@ const BlockDetail = () => {
               Fee Recipient:{" "}
             </span>
             <span className=" w-2/3 font-medium flex items-center">
-              <span className="text-[#cf87df]">{block?.miner}</span>
+              <span className="text-[#9918b3]">{block?.miner}</span>
 
               <Files
-                className="ml-2 cursor-pointer hover:text-[#cf87df] "
+                className="ml-2 cursor-pointer hover:text-[#9918b3] active:text-[#9918b3]/60"
                 size={15}
                 onClick={() =>
                   block && navigator.clipboard.writeText(block?.miner)
@@ -125,7 +118,7 @@ const BlockDetail = () => {
               </span>
               Block Reward:{" "}
             </span>
-            <span className="w-2/3 font-medium ">{blockReward} ETH</span>
+            <span className="w-2/3 font-medium ">{block?.reward} ETH</span>
           </div>
 
           <div className="flex py-5  gap-40 border-bottom-2">
@@ -204,7 +197,7 @@ const BlockDetail = () => {
               {block?.baseFeePerGas &&
                 ethers.formatEther(BigInt(Number(block?.baseFeePerGas)))}{" "}
               ETH{" "}
-              <span className="text-[#cf87df]">
+              <span className="text-[#9918b3]">
                 (
                 {block?.baseFeePerGas &&
                   ethers.formatUnits(
@@ -223,7 +216,9 @@ const BlockDetail = () => {
               Burnt Fees:{" "}
             </span>
             <span className="w-2/3 font-medium ">
-              🔥 {burntFees && ethers.formatEther(BigInt(burntFees))} ETH
+              🔥{" "}
+              {block?.burntFees && ethers.formatEther(BigInt(block?.burntFees))}{" "}
+              ETH
             </span>
           </div>
           <div className="flex py-5  gap-40 border-bottom-2">
@@ -233,7 +228,7 @@ const BlockDetail = () => {
               </span>
               Extra Data:{" "}
             </span>
-            <span className="bg-[#e3bfeb] w-2/3 font-medium  p-5 rounded-md">
+            <span className="bg-[#9918b3]/60 w-2/3 font-medium  p-5 rounded-md">
               {block?.extraData.slice(0, 40)}...
             </span>
           </div>

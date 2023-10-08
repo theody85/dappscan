@@ -43,6 +43,7 @@ import {
 import { ethers } from "ethers";
 import { Progress } from "@material-tailwind/react";
 import { ExtendedBlock } from "../../context/AlchemyContext";
+import { Loader } from "../atoms";
 
 // const columnHelper = createColumnHelper<Block>();
 
@@ -57,7 +58,7 @@ const BlocksTable = () => {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { blockList, blocksPerPage, setBlocksPerPage } =
+  const { blockList, setBlocksPerPage, loading } =
     React.useContext(AlchemyContext);
 
   const columns: ColumnDef<ExtendedBlock>[] = [
@@ -197,7 +198,7 @@ const BlocksTable = () => {
   ];
 
   React.useEffect(() => {
-    setBlocksPerPage(25);
+    setBlocksPerPage(50);
     table.setPageSize(25);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -342,7 +343,7 @@ const BlocksTable = () => {
           }}
         >
           <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder={`${blocksPerPage}`} />
+            <SelectValue placeholder={`${25}`} />
           </SelectTrigger>
           <SelectContent>
             <SelectGroup>
@@ -355,6 +356,12 @@ const BlocksTable = () => {
           </SelectContent>
         </Select>
       </div>
+      {loading && (
+        <div className="flex flex-col justify-center items-center w-full">
+          <Loader size="medium" />
+          <p className="text-center">Loading data...</p>
+        </div>
+      )}
     </div>
   );
 };

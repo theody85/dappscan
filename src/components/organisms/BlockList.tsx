@@ -4,17 +4,17 @@ import { blockIcon } from "../../assets";
 // import { useFetchBlockData } from "../../hooks";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
-import { Loader } from "lucide-react";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { AlchemyContext } from "../../context";
 
 const BlockList = () => {
-  const { blockList, loading } = useContext(AlchemyContext);
+  const { blockList, setBlocksPerPage } = useContext(AlchemyContext);
   const navigate = useNavigate();
 
-  if (loading) {
-    <Loader />;
-  }
+  useEffect(() => {
+    setBlocksPerPage(10);
+  }, [setBlocksPerPage]);
+
   return (
     <CardList title="Blocks">
       {blockList &&

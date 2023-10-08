@@ -1,5 +1,5 @@
-import { rightarrow } from "../../assets";
 import { Link } from "react-router-dom";
+import { ArrowRight } from "lucide-react";
 
 type CardListProps = {
   title: string;
@@ -17,7 +17,7 @@ const CardList = ({ title, children }: CardListProps) => {
         className="bg-gray-100 p-5 flex justify-center gap-3 items-center text-gray-500 hover:bg-[#e3bfeb] hover:text-black"
       >
         <h3 className="uppercase text-sm ">View all {title}</h3>
-        <img src={rightarrow} alt="right-arrow" className="w-4 h-4" />
+        <ArrowRight className="" size={15} />
       </Link>
     </div>
   );

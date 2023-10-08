@@ -1,5 +1,7 @@
+import TransactionsTable from "../components/templates/TransactionsTable";
+
 const Transactions = () => {
-  return <div>Transactions</div>;
+  return <TransactionsTable />;
 };
 
 export default Transactions;

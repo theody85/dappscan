@@ -73,7 +73,7 @@ const BlocksTable = () => {
           {row.getValue("number")}
         </div>
       ),
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
     },
     {

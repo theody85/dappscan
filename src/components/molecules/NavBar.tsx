@@ -5,15 +5,19 @@ import { Link } from "react-router-dom";
 
 const NavBar = () => {
   return (
-    <div className="flex justify-between fixed items-center bg-white top-0 left-0 w-full px-16 py-3 z-50">
+    <div className="flex justify-between fixed items-center bg-white top-0 left-0 w-full px-5 md:px-16 py-3 z-50">
       <Link to="/">
-        <img src={logo} alt="logo" className="w-52" />
+        <img
+          src={logo}
+          alt="logo"
+          className="lg:w-52 w-32 hover:scale-105 cursor-pointer"
+        />
       </Link>
 
       <div className="flex gap-16 items-center">
         <Link
           to="/"
-          className={`hover:text-[#9918b3] hover:scale-105 ${
+          className={`hover:text-[#9918b3] hidden md:flex hover:scale-105 ${
             window.location.href === "/" && "text-[#9918b3]"
           }`}
         >

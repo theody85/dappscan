@@ -26,7 +26,7 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuCheckboxItem,
-} from "@radix-ui/react-dropdown-menu";
+} from "../shadcn/ui/dropdown-menu";
 import {
   Select,
   SelectTrigger,
@@ -34,7 +34,7 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-} from "@radix-ui/react-select";
+} from "../shadcn/ui/select";
 import {
   Table,
   TableHeader,
@@ -68,7 +68,7 @@ const TransactionsTable = () => {
       header: "Txn Hash",
       cell: ({ row }) => (
         <div
-          className="text-left text-[#9918b3] hover:text-[#9918b3]/60"
+          className="text-left font-medium text-[#9918b3] hover:text-[#9918b3]/60"
           onClick={() => navigate(`/txns/${row.getValue("transactionHash")}`)}
         >
           {row.getValue<string>("transactionHash").slice(0, 20).concat("...")}
@@ -82,14 +82,16 @@ const TransactionsTable = () => {
       accessorKey: "blockNumber",
       header: "Block",
       cell: ({ row }) => (
-        <div className="lowercase">{row.getValue<number>("blockNumber")}</div>
+        <div className="text-left font-medium">
+          {row.getValue<number>("blockNumber")}
+        </div>
       ),
     },
     {
       accessorKey: "timestamp",
       header: "Age",
       cell: ({ row }) => (
-        <div className="">
+        <div className="text-left font-medium">
           {moment.unix(row.getValue("timestamp")).fromNow()}
         </div>
       ),
@@ -99,7 +101,7 @@ const TransactionsTable = () => {
       accessorKey: "from",
       header: () => "From",
       cell: ({ row }) => (
-        <div className="flex items-center">
+        <div className="flex items-center xl:gap-12">
           <div className="flex items-center w-[240px]">
             <span className="text-left font-medium text-[#9918b3]">
               {row.getValue<string>("from").slice(0, 20).concat("...")}
@@ -123,8 +125,8 @@ const TransactionsTable = () => {
       accessorKey: "to",
       header: () => "To",
       cell: ({ row }) => (
-        <div className="flex items-center">
-          <span className="text-left font-medium text-[#9918b3]">
+        <div className="flex items-center text-left font-medium">
+          <span className=" text-[#9918b3]">
             {row.getValue<string>("to").slice(0, 20).concat("...")}
           </span>
           <Files
@@ -238,7 +240,19 @@ const TransactionsTable = () => {
               ))}
             </TableHeader>
             <TableBody>
-              {table.getRowModel().rows?.length ? (
+              {loading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
+                    <div className="flex flex-col justify-center items-center w-full h-[50vh]">
+                      <Loader size="medium" />
+                      <p className="text-center">Loading data...</p>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ) : table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
@@ -312,12 +326,6 @@ const TransactionsTable = () => {
             </SelectContent>
           </Select>
         </div>
-        {loading && (
-          <div className="flex flex-col justify-center items-center w-full">
-            <Loader size="medium" />
-            <p className="text-center">Loading data...</p>
-          </div>
-        )}
       </div>
     </div>
   );

@@ -40,7 +40,7 @@ const BlockDetail = () => {
           <div className="flex flex-col md:flex-row py-5  gap-y-4 lg:gap-40">
             <span className="w-full md:w-1/3 flex gap-4 items-center font-bold">
               <span title="Also known as Block Number. The block height, which indicates the length of the blockchain, increases after the addition of the new block.">
-                <HelpCircle className="  " size={15} />
+                <HelpCircle size={15} />
               </span>
               Block Height:{" "}
             </span>
@@ -63,7 +63,7 @@ const BlockDetail = () => {
           <div className="flex py-5 flex-col md:flex-row gap-y-4 lg:gap-40 border-bottom-2">
             <span className="w-full md:w-1/3 flex gap-4 items-center font-bold">
               <span title="The date and time at which a block is produced. ">
-                <HelpCircle className=" " size={15} />
+                <HelpCircle size={15} />
               </span>
               Timestamp:{" "}
             </span>
@@ -234,7 +234,7 @@ const BlockDetail = () => {
               </span>
               Extra Data:{" "}
             </span>
-            <span className="bg-[#9918b3]/60 w-full lg:w-2/3 font-medium  px-5 py-5 rounded-md overflow-hidden text-ellipses">
+            <span className="bg-[#9918b3]/60 w-full lg:w-2/3 font-medium  px-5 py-5 rounded-md overflow-hidden text-ellipsis">
               {block?.extraData.slice(0, 40)}...
             </span>
           </div>

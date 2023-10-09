@@ -3,7 +3,7 @@ import K from "../../constants";
 
 const Footer = () => {
   return (
-    <div className="hero w-full  px-16 py-16 flex justify-between items-center ">
+    <div className="hero w-full  md:px-16 py-16 flex flex-col justify-center md:flex-row md:justify-between items-center ">
       <div className="flex items-center shadow">
         <img src={logoicon} alt="logo icon" className="w-16 h-16" />
         <span className="text-xl text-white font-semibold">

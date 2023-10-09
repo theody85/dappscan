@@ -44,21 +44,25 @@ import { ethers } from "ethers";
 import { Progress } from "@material-tailwind/react";
 import { ExtendedBlock } from "../../context/AlchemyContext";
 import { Loader } from "../atoms";
+import { useState } from "react";
 
 // const columnHelper = createColumnHelper<Block>();
 
 const BlocksTable = () => {
   const navigate = useNavigate();
 
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = useState({});
 
   const { blockList, setLimit, loading } = React.useContext(AlchemyContext);
+
+  React.useEffect(() => {
+    setLimit(40);
+    table.setPageSize(25);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const columns: ColumnDef<ExtendedBlock>[] = [
     {
@@ -197,12 +201,6 @@ const BlocksTable = () => {
     },
   ];
 
-  React.useEffect(() => {
-    setLimit(50);
-    table.setPageSize(25);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   const table = useReactTable({
     data: blockList ?? [],
     columns,
@@ -293,7 +291,7 @@ const BlocksTable = () => {
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  <div className="flex flex-col justify-center items-center w-full">
+                  <div className="flex flex-col justify-center items-center w-full h-[50vh]">
                     <Loader size="medium" />
                     <p className="text-center">Loading data...</p>
                   </div>

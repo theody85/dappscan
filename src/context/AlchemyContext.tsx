@@ -61,9 +61,7 @@ const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
     ExtendedTransaction[]
   >([]);
   const [fetchedTxns, setFetchedTxns] = useState<ExtendedTransaction[]>([]);
-
   const [fetchTxnsOnly, setFetchTxnsOnly] = useState<boolean>(false);
-
   const [loading, setLoading] = useState<boolean>(false);
 
   const alchemy = new Alchemy(settings);
@@ -78,10 +76,9 @@ const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
       const blockTransactions = block.transactions;
       const latestTransactionHash =
         blockTransactions[blockTransactions.length - 1];
+
       const latestTransaction = await getTransaction(latestTransactionHash);
-
       latestTransaction && transactionList.push(latestTransaction);
-
       blockList.push(block);
 
       blockNumber--;

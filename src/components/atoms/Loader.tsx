@@ -17,7 +17,7 @@ const Loader = ({ size, classes }: LoaderProps) => {
       className={cn(
         "animate-spin ring-[#9918b3]",
         sizeMap[size ?? "small"],
-        classes
+        classes,
       )}
     />
   );

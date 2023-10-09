@@ -19,7 +19,7 @@ const Block = ({
       amountTitle="Block Reward"
       navigateToBlockDetail={navigateToBlockDetail}
     >
-      <div className="flex flex-col gap-y-3">
+      <div className="flex gap-2 md:gap-0 md:flex-col ">
         <div>
           Validated By{" "}
           <span title={feeRecipient} className="text-[#9918b3]">

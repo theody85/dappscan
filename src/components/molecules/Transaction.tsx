@@ -15,19 +15,25 @@ const Transaction = ({
   return (
     <Card
       {...cardProps}
-      amountTitle="Ether"
+      amountTitle="Value"
       navigateToBlockDetail={navigateToTxnDetail}
     >
-      <div className="flex flex-col items-start gap-y-3 md:gap-y-0">
+      <div className="flex flex-col  items-start ">
         <div>
           To{" "}
-          <span title={to} className="text-[#9918b3]">
+          <span
+            title={to}
+            className="text-[#9918b3] text-ellipsis overflow-hidden"
+          >
             {to.slice(0, 16)}...
           </span>
         </div>
         <div>
           From{" "}
-          <span title={from} className="text-[#9918b3]">
+          <span
+            title={from}
+            className="text-[#9918b3] text-ellipsis overflow-hidden"
+          >
             {from.slice(0, 15)}...
           </span>
         </div>

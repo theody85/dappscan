@@ -52,7 +52,15 @@ const TransactionsTable = () => {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const { fetchedTxns, loading, setBlocksPerPage } = useContext(AlchemyContext);
+  const { fetchedTxns, loading, setLimit, setFetchTxnsOnly } =
+    useContext(AlchemyContext);
+
+  useEffect(() => {
+    setFetchTxnsOnly(true);
+    setLimit(30);
+    table.setPageSize(25);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const columns: ColumnDef<ExtendedTransaction>[] = [
     {
@@ -66,8 +74,9 @@ const TransactionsTable = () => {
           {row.getValue<string>("transactionHash").slice(0, 20).concat("...")}
         </div>
       ),
-      enableSorting: false,
+      enableSorting: true,
       enableHiding: false,
+      filterFn: "includesString",
     },
     {
       accessorKey: "blockNumber",
@@ -132,19 +141,13 @@ const TransactionsTable = () => {
       accessorKey: "value",
       header: () => "Value",
       cell: ({ row }) => (
-        <div className="text-right font-medium">
+        <div className="text-left font-medium">
           {Number(ethers.formatEther(row.getValue<bigint>("value"))).toFixed(6)}{" "}
           ETH
         </div>
       ),
     },
   ];
-
-  useEffect(() => {
-    setBlocksPerPage(30);
-    table.setPageSize(25);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const table = useReactTable({
     data: fetchedTxns ?? [],
@@ -171,18 +174,25 @@ const TransactionsTable = () => {
         <h2 className="text-3xl">Transactions</h2>
         <div className="flex items-center py-4">
           <Input
-            placeholder="Search by block number..."
+            placeholder="Search by transaction hash..."
             value={
-              (table.getColumn("number")?.getFilterValue() as string) ?? ""
+              (table
+                .getColumn("transactionHash")
+                ?.getFilterValue() as string) ?? ""
             }
             onChange={(event) =>
-              table.getColumn("number")?.setFilterValue(event.target.value)
+              table
+                .getColumn("transactionHash")
+                ?.setFilterValue(event.target.value)
             }
-            className="max-w-sm border"
+            className="max-w-sm border border-[#e3bfeb]"
           />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" className="ml-auto">
+              <Button
+                variant="outline"
+                className="ml-auto border border-[#e3bfeb]"
+              >
                 Columns <ChevronDown className="ml-2 h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -285,7 +295,7 @@ const TransactionsTable = () => {
           <Select
             onValueChange={(value: string | number) => {
               table.setPageSize(+value);
-              setBlocksPerPage(+value);
+              setLimit(+value);
             }}
           >
             <SelectTrigger className="w-[180px]">

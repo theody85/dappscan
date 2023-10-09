@@ -4,16 +4,12 @@ import { blockIcon } from "../../assets";
 // import { useFetchBlockData } from "../../hooks";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { AlchemyContext } from "../../context";
 
 const BlockList = () => {
-  const { blockList, setBlocksPerPage } = useContext(AlchemyContext);
+  const { blockList } = useContext(AlchemyContext);
   const navigate = useNavigate();
-
-  useEffect(() => {
-    setBlocksPerPage(10);
-  }, [setBlocksPerPage]);
 
   return (
     <CardList title="Blocks">

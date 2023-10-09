@@ -6,7 +6,7 @@
 
 export const useFetchBlockData = () => {
   // const [blockList, setBlockList] = useState<Block[]>([]);
-  // const [blocksPerPage, setBlocksPerPage] = useState<number>(BLOCKS_PER_PAGE);
+  // const [limit, setLimit] = useState<number>(BLOCKS_PER_PAGE);
   // const [loading, setLoading] = useState<boolean>(false);
   // const alchemy = useContext(AlchemyContext);
   // const getBlockList = async (blockNumber: number, limit: number) => {
@@ -27,15 +27,15 @@ export const useFetchBlockData = () => {
   //   (async () => {
   //     setLoading(true);
   //     const latestBlock = await alchemy.core.getBlockNumber();
-  //     getBlockList(latestBlock, blocksPerPage);
+  //     getBlockList(latestBlock, limit);
   //   })();
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [blocksPerPage]);
+  // }, [limit]);
   // return {
   //   blockList,
   //   getBlockList,
   //   getBlock,
-  //   setBlocksPerPage,
+  //   setLimit,
   //   loading,
   // };
 };

@@ -58,8 +58,7 @@ const BlocksTable = () => {
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
-  const { blockList, setBlocksPerPage, loading } =
-    React.useContext(AlchemyContext);
+  const { blockList, setLimit, loading } = React.useContext(AlchemyContext);
 
   const columns: ColumnDef<ExtendedBlock>[] = [
     {
@@ -75,6 +74,7 @@ const BlocksTable = () => {
       ),
       enableSorting: true,
       enableHiding: false,
+      filterFn: "includesString",
     },
     {
       accessorKey: "timestamp",
@@ -179,7 +179,7 @@ const BlocksTable = () => {
       accessorKey: "reward",
       header: () => "Reward",
       cell: ({ row }) => (
-        <div className="text-right font-medium">
+        <div className="text-left font-medium">
           {row.getValue("reward")} ETH
         </div>
       ),
@@ -188,7 +188,7 @@ const BlocksTable = () => {
       accessorKey: "burntFees",
       header: () => "Burnt Fees (ETH)",
       cell: ({ row }) => (
-        <div className="text-right font-medium">
+        <div className="text-left font-medium">
           {Number(
             ethers.formatEther(BigInt(row.getValue<number>("burntFees"))),
           ).toFixed(6)}
@@ -198,7 +198,7 @@ const BlocksTable = () => {
   ];
 
   React.useEffect(() => {
-    setBlocksPerPage(50);
+    setLimit(50);
     table.setPageSize(25);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -222,6 +222,7 @@ const BlocksTable = () => {
     },
   });
   console.log(table.getState().pagination.pageSize, "table");
+
   return (
     <div className="w-full lg:px-16 mt-24 mb-20">
       <h2 className="text-3xl">Blocks</h2>
@@ -232,11 +233,15 @@ const BlocksTable = () => {
           onChange={(event) =>
             table.getColumn("number")?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="max-w-sm border border-[#e3bfeb]"
         />
+
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button
+              variant="outline"
+              className="ml-auto border border-[#e3bfeb]"
+            >
               Columns <ChevronDown className="ml-2 h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -282,7 +287,19 @@ const BlocksTable = () => {
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {loading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  <div className="flex flex-col justify-center items-center w-full">
+                    <Loader size="medium" />
+                    <p className="text-center">Loading data...</p>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}
@@ -339,7 +356,7 @@ const BlocksTable = () => {
         <Select
           onValueChange={(value: string | number) => {
             table.setPageSize(+value);
-            setBlocksPerPage(+value);
+            setLimit(+value);
           }}
         >
           <SelectTrigger className="w-[180px]">
@@ -356,12 +373,6 @@ const BlocksTable = () => {
           </SelectContent>
         </Select>
       </div>
-      {loading && (
-        <div className="flex flex-col justify-center items-center w-full">
-          <Loader size="medium" />
-          <p className="text-center">Loading data...</p>
-        </div>
-      )}
     </div>
   );
 };

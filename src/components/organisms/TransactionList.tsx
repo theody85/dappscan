@@ -21,9 +21,7 @@ const TransactionList = () => {
             icon: receipt,
             identifier: transaction.transactionHash.slice(0, 18) + "...",
             timestamp: moment.unix(transaction.timestamp).fromNow(),
-            amount: Number(ethers.formatEther(transaction.value)).toPrecision(
-              4,
-            ),
+            amount: Number(ethers.formatEther(transaction.value)).toFixed(5),
           } as CardProps;
 
           const to = transaction.to;

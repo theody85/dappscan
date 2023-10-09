@@ -18,7 +18,7 @@ const Transaction = ({
       amountTitle="Ether"
       navigateToBlockDetail={navigateToTxnDetail}
     >
-      <div className="flex flex-col items-start">
+      <div className="flex flex-col items-start gap-y-3 md:gap-y-0">
         <div>
           To{" "}
           <span title={to} className="text-[#9918b3]">

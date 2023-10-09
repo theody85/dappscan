@@ -17,15 +17,21 @@ export type AlchemyContextType = {
   alchemy: Alchemy;
   blockList: ExtendedBlock[] | null;
   transactionList: ExtendedTransaction[] | null;
-  getBlockList: (blockNumber: number, limit: number) => Promise<void>;
+  getBlockList: (
+    blockNumber: number,
+    limit: number,
+    fetchTxn?: boolean,
+  ) => Promise<void>;
   getBlock: (blockNumber: number) => Promise<ExtendedBlock | null>;
   getTransaction: (
     transactionHash: string,
   ) => Promise<ExtendedTransaction | null>;
+
   fetchedTxns: ExtendedTransaction[] | null;
-  blocksPerPage: number;
-  setBlocksPerPage: (blocksPerPage: number) => void;
+  limit: number;
+  setLimit: (limit: number) => void;
   loading: boolean;
+  setFetchTxnsOnly: (fetchTxnsOnly: boolean) => void;
 };
 
 export const AlchemyContext = createContext<AlchemyContextType>({
@@ -36,9 +42,10 @@ export const AlchemyContext = createContext<AlchemyContextType>({
   getBlock: () => Promise.resolve(null),
   getTransaction: () => Promise.resolve(null),
   fetchedTxns: null,
-  blocksPerPage: 0,
-  setBlocksPerPage: () => null,
+  limit: 0,
+  setLimit: () => null,
   loading: false,
+  setFetchTxnsOnly: () => null,
 });
 
 const settings = {
@@ -46,15 +53,16 @@ const settings = {
   network: Network.ETH_MAINNET,
 };
 
-const BLOCKS_PER_PAGE = 10;
-
 const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
   const [blockList, setBlockList] = useState<ExtendedBlock[]>([]);
-  const [blocksPerPage, setBlocksPerPage] = useState<number>(BLOCKS_PER_PAGE);
-  const [transactionList, setTransactionList] = useState<ExtendedTransaction[]>(
-    [],
-  );
+  const [limit, setLimit] = useState<number>(0);
+  // const [transactionsPerPage, setTransactionsPerPage] = useState<number>(0);
+  const [latestTransactionList, setLatestTransactionList] = useState<
+    ExtendedTransaction[]
+  >([]);
   const [fetchedTxns, setFetchedTxns] = useState<ExtendedTransaction[]>([]);
+
+  const [fetchTxnsOnly, setFetchTxnsOnly] = useState<boolean>(false);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -64,7 +72,6 @@ const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
   const getBlockList = async (blockNumber: number, limit: number) => {
     const blockList: ExtendedBlock[] = [];
     const transactionList: ExtendedTransaction[] = [];
-    const fetchedTxns: ExtendedTransaction[] = [];
 
     for (let i = 0; i < limit; i++) {
       const block = await getBlock(blockNumber);
@@ -77,20 +84,11 @@ const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
 
       blockList.push(block);
 
-      if (fetchedTxns.length < limit) {
-        for (const txnHash of blockTransactions) {
-          const txn = await getTransaction(txnHash);
-          txn && fetchedTxns.push(txn);
-          if (fetchedTxns.length === limit) break;
-        }
-      }
-
       blockNumber--;
     }
 
     setBlockList(blockList);
-    setTransactionList(transactionList);
-    setFetchedTxns(fetchedTxns);
+    setLatestTransactionList(transactionList);
 
     setLoading(false);
   };
@@ -99,7 +97,7 @@ const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
     const block = await alchemy.core.getBlock(blockNumber);
     const { reward, burntFees } = await getBlockReward(block);
 
-    const fullBlock = { ...block, reward: reward.toPrecision(4), burntFees };
+    const fullBlock = { ...block, reward: reward.toFixed(5), burntFees };
     return fullBlock;
   };
 
@@ -158,28 +156,58 @@ const AlchemyContextProvider = ({ children }: AlchemyContextProviderProps) => {
     return fullTxnDetails;
   };
 
+  const getTransactionListWithDetails = async (blockNumber: number) => {
+    const transactionList: ExtendedTransaction[] = [];
+
+    for (let i = 0; i < limit; i++) {
+      const block = await getBlock(blockNumber);
+      const txnHashes = block.transactions;
+
+      for (const hash of txnHashes) {
+        if (transactionList.length === limit) break;
+        const txn = await getTransaction(hash);
+        txn && transactionList.push(txn);
+      }
+      if (transactionList.length === limit) break;
+      blockNumber--;
+    }
+
+    return transactionList;
+  };
+
   useEffect(() => {
-    (async () => {
+    const fetchData = async () => {
       setLoading(true);
       const latestBlock = await alchemy.core.getBlockNumber();
-      getBlockList(latestBlock, blocksPerPage);
-    })();
+      if (fetchTxnsOnly) {
+        const txns = await getTransactionListWithDetails(latestBlock);
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //  @ts-ignore
+        setFetchedTxns(txns);
+        setLoading(false);
+        return;
+      }
+      getBlockList(latestBlock, limit);
+    };
+
+    if (limit) fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [blocksPerPage]);
-  console.log(blocksPerPage);
+  }, [limit]);
+
   return (
     <AlchemyContext.Provider
       value={{
         alchemy,
         blockList,
-        transactionList,
+        transactionList: latestTransactionList,
         getBlockList,
         getBlock,
         getTransaction,
         fetchedTxns,
-        setBlocksPerPage,
-        blocksPerPage,
+        setLimit,
+        limit,
         loading,
+        setFetchTxnsOnly,
       }}
     >
       {children}

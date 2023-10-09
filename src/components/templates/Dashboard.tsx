@@ -1,11 +1,16 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import BlockList from "../organisms/BlockList";
 import TransactionList from "../organisms/TransactionList";
 import { AlchemyContext } from "../../context";
 import { Loader } from "../atoms";
 
 const Dashboard = () => {
-  const { loading } = useContext(AlchemyContext);
+  const { loading, setLimit } = useContext(AlchemyContext);
+
+  useEffect(() => {
+    setLimit(10);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return (
     <>
       {loading ? (
@@ -14,7 +19,7 @@ const Dashboard = () => {
           <p className="text-center">Loading data...</p>
         </div>
       ) : (
-        <div className="mx-16 text-sm grid lg:grid-cols-2 gap-10 pb-20 -mt-20">
+        <div className="mx-8 lg:mx-16 text-sm grid grid-cols-1 lg:grid-cols-2 gap-10 pb-20 -mt-10 lg:-mt-20">
           <BlockList />
           <TransactionList />
         </div>

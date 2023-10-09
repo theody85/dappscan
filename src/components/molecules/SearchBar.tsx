@@ -4,7 +4,7 @@ import { search } from "../../assets";
 
 const SearchBar = () => {
   return (
-    <div className="w-4/5 lg:w-1/2 bg-white px-2 py-2  rounded-xl gap-2 flex flex-row items-center text-sm relative">
+    <div className="w-full lg:w-1/2 bg-white px-2 py-2  rounded-xl gap-2 flex flex-row items-center text-sm relative">
       <Select options={K.FILTERS} />
       <div className="flex gap-2 w-full relative">
         <input

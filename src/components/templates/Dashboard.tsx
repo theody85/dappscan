@@ -5,10 +5,14 @@ import { AlchemyContext } from "../../context";
 import { Loader } from "../atoms";
 
 const Dashboard = () => {
-  const { loading, setLimit } = useContext(AlchemyContext);
+  const { loading, setLimit, setFetchLatestTxns, blockList, transactionList } =
+    useContext(AlchemyContext);
 
   useEffect(() => {
     setLimit(10);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    //@ts-ignore
+    setFetchLatestTxns(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
@@ -20,8 +24,8 @@ const Dashboard = () => {
         </div>
       ) : (
         <div className="mx-8 lg:mx-16 text-sm grid grid-cols-1 xl:grid-cols-2 gap-10 pb-20 -mt-10 lg:-mt-20">
-          <BlockList />
-          <TransactionList />
+          <BlockList blockList={blockList} />
+          <TransactionList transactionList={transactionList} />
         </div>
       )}
     </>

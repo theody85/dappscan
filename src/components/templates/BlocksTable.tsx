@@ -46,8 +46,6 @@ import { ExtendedBlock } from "../../context/AlchemyContext";
 import { Loader } from "../atoms";
 import { useState } from "react";
 
-// const columnHelper = createColumnHelper<Block>();
-
 const BlocksTable = () => {
   const navigate = useNavigate();
 
@@ -338,6 +336,7 @@ const BlocksTable = () => {
             size="sm"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
+            className="border border-[#e3bfeb]"
           >
             Previous
           </Button>
@@ -346,6 +345,7 @@ const BlocksTable = () => {
             size="sm"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
+            className="border border-[#e3bfeb]"
           >
             Next
           </Button>
@@ -357,7 +357,7 @@ const BlocksTable = () => {
             setLimit(+value);
           }}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-[180px] border border-[#e3bfeb]">
             <SelectValue placeholder={`${25}`} />
           </SelectTrigger>
           <SelectContent>

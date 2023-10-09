@@ -52,7 +52,7 @@ const TransactionsTable = () => {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const { fetchedTxns, loading, setLimit, setFetchTxnsOnly } =
+  const { transactionList, loading, setLimit, setFetchTxnsOnly } =
     useContext(AlchemyContext);
 
   useEffect(() => {
@@ -152,7 +152,7 @@ const TransactionsTable = () => {
   ];
 
   const table = useReactTable({
-    data: fetchedTxns ?? [],
+    data: transactionList ?? [],
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -293,6 +293,7 @@ const TransactionsTable = () => {
               size="sm"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
+              className="border border-[#e3bfeb]"
             >
               Previous
             </Button>
@@ -301,6 +302,7 @@ const TransactionsTable = () => {
               size="sm"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
+              className="border border-[#e3bfeb]"
             >
               Next
             </Button>
@@ -312,7 +314,7 @@ const TransactionsTable = () => {
               setLimit(+value);
             }}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[180px] border border-[#e3bfeb] ">
               <SelectValue placeholder={`${25}`} />
             </SelectTrigger>
             <SelectContent>

@@ -12,8 +12,8 @@ const Footer = () => {
         </span>
       </div>
       <div className="flex gap-8">
-        {K.SOCIAL.map((social) => (
-          <a href={social.url} className=" drop-shadow-2xl">
+        {K.SOCIAL.map((social, index) => (
+          <a href={social.url} className=" drop-shadow-2xl" key={index}>
             <img
               src={social.icon}
               alt="social media icon"

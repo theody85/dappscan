@@ -1,14 +1,12 @@
 import CardList from "./CardList";
 import BlockData from "../molecules/Block";
 import { blockIcon } from "../../assets";
-// import { useFetchBlockData } from "../../hooks";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
-import { useContext } from "react";
-import { AlchemyContext } from "../../context";
 
-const BlockList = () => {
-  const { blockList } = useContext(AlchemyContext);
+import { ExtendedBlock } from "../../context/AlchemyContext";
+
+const BlockList = ({ blockList }: { blockList: ExtendedBlock[] | null }) => {
   const navigate = useNavigate();
 
   return (

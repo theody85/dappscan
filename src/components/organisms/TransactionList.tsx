@@ -1,16 +1,17 @@
-import { useContext } from "react";
-
 import CardList from "./CardList";
 import { receipt } from "../../assets";
 import Transaction from "../molecules/Transaction";
-import { AlchemyContext } from "../../context";
 import { CardProps } from "../molecules/Card";
 import { ethers } from "ethers";
 import moment from "moment";
 import { useNavigate } from "react-router-dom";
+import { ExtendedTransaction } from "../../context/AlchemyContext";
 
-const TransactionList = () => {
-  const { transactionList } = useContext(AlchemyContext);
+const TransactionList = ({
+  transactionList,
+}: {
+  transactionList: ExtendedTransaction[] | null;
+}) => {
   const navigate = useNavigate();
 
   return (
